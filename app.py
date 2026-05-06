@@ -15,14 +15,14 @@ st.markdown("Predict whether a customer will leave the service or stay.")
 def load_model():
     data = pd.read_csv("Telco-Customer-Churn.csv")
 
-    # Drop unnecessary column
+    # Drop column
     data.drop("customerID", axis=1, errors="ignore", inplace=True)
 
     # Convert TotalCharges
     data["TotalCharges"] = pd.to_numeric(data["TotalCharges"], errors="coerce")
     data["TotalCharges"].fillna(data["TotalCharges"].mean(), inplace=True)
 
-    # Select required columns
+    # Select columns
     selected_cols = [
         "tenure","MonthlyCharges","TotalCharges","Contract",
         "InternetService","PaymentMethod","OnlineSecurity",
@@ -30,15 +30,17 @@ def load_model():
     ]
     data = data[selected_cols]
 
-    # ✅ Target clean 
+    # Clean target
     data["Churn"] = data["Churn"].replace({"Yes": 1, "No": 0})
-    data = data[data["Churn"].isin([0, 1])]
+    data["Churn"] = pd.to_numeric(data["Churn"], errors="coerce")
+    data = data.dropna(subset=["Churn"])
+    data["Churn"] = data["Churn"].astype(int)
 
-    # ✅ Split BEFORE encoding 
+    # Split
     X = data.drop("Churn", axis=1)
     y = data["Churn"]
 
-    # ✅ Encoding only on X
+    # Encoding
     X = pd.get_dummies(X, drop_first=True)
 
     # Model
