@@ -8,8 +8,8 @@ It helps understand customer behavior and supports retention strategies.
 
 To build a classification model that predicts:
 
-0 → Customer will churn
-1 → Customer will stay
+0 → Customer will stay
+1 → Customer will churn
 📂 Dataset
 
 The dataset contains telecom customer information such as:
