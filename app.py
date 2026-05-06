@@ -15,31 +15,45 @@ st.markdown("Predict whether a customer will leave the service or stay.")
 def load_model():
     data = pd.read_csv("Telco-Customer-Churn.csv")
 
+    # Drop unnecessary column
     data.drop("customerID", axis=1, errors="ignore", inplace=True)
 
+    # Convert TotalCharges
     data["TotalCharges"] = pd.to_numeric(data["TotalCharges"], errors="coerce")
     data["TotalCharges"].fillna(data["TotalCharges"].mean(), inplace=True)
 
-    data["Churn"] = data["Churn"].replace({"Yes": 1, "No": 0})
-    data = data[data["Churn"].isin([0, 1])]
-
+    # Select required columns
     selected_cols = [
         "tenure","MonthlyCharges","TotalCharges","Contract",
         "InternetService","PaymentMethod","OnlineSecurity",
         "TechSupport","SeniorCitizen","Churn"
     ]
-
     data = data[selected_cols]
-    data = pd.get_dummies(data, drop_first=True)
 
+    # ✅ Target clean 
+    data["Churn"] = data["Churn"].replace({"Yes": 1, "No": 0})
+    data = data[data["Churn"].isin([0, 1])]
+
+    # ✅ Split BEFORE encoding 
     X = data.drop("Churn", axis=1)
     y = data["Churn"]
 
-    model = RandomForestClassifier(n_estimators=100, random_state=42, class_weight="balanced")
+    # ✅ Encoding only on X
+    X = pd.get_dummies(X, drop_first=True)
+
+    # Model
+    from sklearn.ensemble import RandomForestClassifier
+    model = RandomForestClassifier(
+        n_estimators=100,
+        random_state=42,
+        class_weight="balanced"
+    )
     model.fit(X, y)
 
     return model, X.columns
 
+
+# Load model
 model, columns = load_model()
 
 # Sidebar Inputs
