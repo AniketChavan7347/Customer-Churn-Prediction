@@ -92,18 +92,25 @@ input_df = input_df.reindex(columns=columns, fill_value=0)
 
 # Prediction
 if st.button("🔍 Predict"):
-    pred = model.predict(input_df)[0]
     prob = model.predict_proba(input_df)[0][1]
 
     st.subheader("📈 Prediction Result")
 
-    st.write(f"Churn Probability: {prob*100:.1f}%")  
+    # Show probability nicely
+    st.metric(label="Churn Probability", value=f"{prob*100:.1f}%")
 
-    if prob > 0.5:
-        st.error("⚠️ High Risk: Customer likely to Churn")
+    # Risk Levels (Professional way)
+    if prob > 0.7:
+        st.error("🔴 High Risk: Customer will CHURN")
+    elif prob > 0.4:
+        st.warning("🟡 Medium Risk: Customer may CHURN")
     else:
-        st.success("✅ Low Risk: Customer will Stay")
+        st.success("🟢 Low Risk: Customer will STAY")
 
+    # Info message
+    st.info("ℹ️ This prediction is probability-based. Small changes in input may affect the result.")
+
+ 
 
  
 # Insights Section
